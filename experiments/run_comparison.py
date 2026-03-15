@@ -17,8 +17,7 @@ import matplotlib.pyplot as plt
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from configs.config import Config
-from models.resnet import build_resnet
-from models.resnet_self_distill import build_self_distill_resnet
+from models.builder import build_model, build_self_distill_model
 from utils.data import get_cifar_loaders
 from utils.train import (train_standard, train_ban_generation,
                           train_self_distill)
@@ -132,7 +131,7 @@ def main():
     logger.info("=" * 60)
     logger.info("EXPERIMENT 1: Baseline")
     logger.info("=" * 60)
-    baseline_model = build_resnet(cfg.architecture, cfg.num_classes)
+    baseline_model = build_model(cfg.architecture, cfg.num_classes)
     baseline_model, baseline_acc, baseline_hist = train_standard(
         baseline_model, train_loader, test_loader, cfg, device, tag="baseline"
     )
@@ -147,7 +146,7 @@ def main():
     logger.info("=" * 60)
 
     # Gen 1 = baseline (reuse if same architecture; train fresh for fairness)
-    teacher = build_resnet(cfg.architecture, cfg.num_classes)
+    teacher = build_model(cfg.architecture, cfg.num_classes)
     teacher, gen1_acc, gen1_hist = train_standard(
         teacher, train_loader, test_loader, cfg, device, tag="ban_gen1"
     )
@@ -155,7 +154,7 @@ def main():
     ban_last_hist = gen1_hist
 
     for gen in range(2, cfg.ban_generations + 1):
-        student = build_resnet(cfg.architecture, cfg.num_classes)
+        student = build_model(cfg.architecture, cfg.num_classes)
         student, gen_acc, gen_hist = train_ban_generation(
             student, teacher, train_loader, test_loader, cfg, device,
             tag=f"ban_gen{gen}",
@@ -173,7 +172,7 @@ def main():
     logger.info("=" * 60)
     logger.info("EXPERIMENT 3: Self-Distillation (BYOT)")
     logger.info("=" * 60)
-    sd_model = build_self_distill_resnet(cfg.architecture, cfg.num_classes)
+    sd_model = build_self_distill_model(cfg.architecture, cfg.num_classes)
     sd_model, sd_acc, sd_hist = train_self_distill(
         sd_model, train_loader, test_loader, cfg, device, tag="self_distill"
     )

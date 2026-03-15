@@ -12,7 +12,7 @@ class Config:
     num_workers: int = 4
 
     # ── Model ────────────────────────────────────────────────────────────
-    architecture: str = "resnet18"     # "resnet18", "resnet34", "resnet50"
+    architecture: str = "resnet18"     # resnet18/34/50, efficientnet_b0/b1/b2
     num_classes: int = 100
 
     # ── Training ─────────────────────────────────────────────────────────

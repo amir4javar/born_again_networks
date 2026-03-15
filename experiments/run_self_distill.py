@@ -15,7 +15,7 @@ import torch
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from configs.config import Config
-from models.resnet_self_distill import build_self_distill_resnet
+from models.builder import build_self_distill_model
 from utils.data import get_cifar_loaders
 from utils.train import train_self_distill
 from utils.metrics import get_logger, save_results
@@ -42,7 +42,7 @@ def main():
     logger.info("Layer-wise Self-Distillation (BYOT)")
     logger.info("=" * 60)
 
-    model = build_self_distill_resnet(cfg.architecture, cfg.num_classes)
+    model = build_self_distill_model(cfg.architecture, cfg.num_classes)
     model, best_acc, history = train_self_distill(
         model, train_loader, test_loader, cfg, device, tag="self_distill"
     )

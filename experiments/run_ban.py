@@ -16,7 +16,7 @@ import torch
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from configs.config import Config
-from models.resnet import build_resnet
+from models.builder import build_model
 from utils.data import get_cifar_loaders
 from utils.train import train_standard, train_ban_generation
 from utils.metrics import get_logger, save_results
@@ -44,7 +44,7 @@ def main():
     logger.info("=" * 60)
     logger.info("Generation 1 — Standard training")
     logger.info("=" * 60)
-    gen1_model = build_resnet(cfg.architecture, cfg.num_classes)
+    gen1_model = build_model(cfg.architecture, cfg.num_classes)
     gen1_model, gen1_acc, gen1_hist = train_standard(
         gen1_model, train_loader, test_loader, cfg, device, tag="ban_gen1"
     )
@@ -58,7 +58,7 @@ def main():
         logger.info(f"Generation {gen} — Born-Again from Gen {gen - 1}")
         logger.info("=" * 60)
 
-        student = build_resnet(cfg.architecture, cfg.num_classes)
+        student = build_model(cfg.architecture, cfg.num_classes)
         student, gen_acc, gen_hist = train_ban_generation(
             student, teacher, train_loader, test_loader, cfg, device,
             tag=f"ban_gen{gen}",
